@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}FoodRescue.pk{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+{% block navbar %}
+<nav class="navbar">
+  <a href="/dashboard/" class="nav-logo">🌿 FoodRescue<span>.pk</span></a>
+  {% if user.is_authenticated %}
+  <div class="nav-links">
+    {% if user.role == 'donor' %}
+      <a href="/dashboard/" class="nav-link {% block nl_dash %}{% endblock %}">Dashboard</a>
+      <a href="/listings/create/" class="nav-link {% block nl_post %}{% endblock %}">Post Listing</a>
+      <a href="/listings/my/" class="nav-link {% block nl_my %}{% endblock %}">My Listings</a>
+      <a href="/analytics/" class="nav-link {% block nl_analytics %}{% endblock %}">Analytics</a>
+    {% elif user.role == 'ngo' %}
+      <a href="/listings/" class="nav-link {% block nl_feed %}{% endblock %}">Live Feed</a>
+      <a href="/my-claims/" class="nav-link {% block nl_claims %}{% endblock %}">My Claims</a>
+      <a href="/certificates/" class="nav-link {% block nl_certs %}{% endblock %}">Certificates</a>
+      <a href="/analytics/" class="nav-link {% block nl_ngo_analytics %}{% endblock %}">Analytics</a>
+    {% elif user.role == 'admin' %}
+      <a href="/dashboard/" class="nav-link">Dashboard</a>
+      <a href="/admin-users/" class="nav-link">Users</a>
+      <a href="/admin-listings/" class="nav-link">Listings</a>
+      <a href="/analytics/" class="nav-link">Analytics</a>
+    {% endif %}
+    <a href="/notifications/" class="nav-bell">
+      🔔{% if unread %}<span class="nav-badge">{{ unread }}</span>{% endif %}
+    </a>
+    <a href="/profile/" class="nav-icon-btn" title="Profile">👤</a>
+    <button class="nav-logout-btn" id="logoutBtn">↪ Logout</button>
+  </div>
+  {% endif %}
+</nav>
+{% endblock %}
+
+{% if messages %}
+<div class="messages-wrap">
+  {% for msg in messages %}
+    <div class="message message-{{ msg.tags }}">{{ msg }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+{% if user.is_authenticated %}
+<div class="modal-overlay" id="logoutModal">
+  <div class="modal">
+    <h3>Are you sure you want to logout?</h3>
+    <p>You will need to login again to access your account.</p>
+    <div class="modal-btns">
+      <button class="btn btn-grey" onclick="document.getElementById('logoutModal').classList.remove('show')">No, Stay</button>
+      <a href="/logout/" class="btn btn-primary">Yes, Logout</a>
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('logoutBtn').addEventListener('click',function(e){
+  e.preventDefault();
+  document.getElementById('logoutModal').classList.add('show');
+});
+document.getElementById('logoutModal').addEventListener('click',function(e){
+  if(e.target===this) this.classList.remove('show');
+});
+</script>
+{% endif %}
+
+<footer class="footer">
+  🌿 FoodRescue.pk &mdash; Air University Islamabad &mdash; Ansa Nisar (2502912) &amp; Fatima Bibi (2502854)
+</footer>
+</body>
+</html>
